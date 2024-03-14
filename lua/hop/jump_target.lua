@@ -114,9 +114,15 @@ local function create_line_indirect_jump_targets(jump_ctx, locations, opts)
   for _, jump_target in pairs(line_jump_targets) do
     locations.jump_targets[#locations.jump_targets + 1] = jump_target
 
+    local score = nil
+    if opts.custom_distance_fn ~= nil then
+      score = opts.custom_distance_fn(jump_ctx.win_ctx.cursor, jump_target.cursor) + win_bias
+    else
+      score = manh_dist(jump_ctx.win_ctx.cursor, jump_target.cursor, opts.x_bias) + win_bias
+    end
     locations.indirect_jump_targets[#locations.indirect_jump_targets + 1] = {
       index = #locations.jump_targets,
-      score = manh_dist(jump_ctx.win_ctx.cursor, jump_target.cursor, opts.x_bias) + win_bias,
+      score = score,
     }
   end
 end
